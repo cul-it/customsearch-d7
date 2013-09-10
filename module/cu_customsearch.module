@@ -91,12 +91,12 @@ function cu_customsearch_perm() {
  * Implementation of hook_menu().
  */
 function cu_customsearch_menu() {
-	$items['cu_search'] = array (
-		'title' => 'Cornell Custom Search',
-		'page callback' => '_cu_customsearch_page',
-		'access arguments' => array('Cornell custom search'),
-		'type' => MENU_CALLBACK,
-		);
+	$items['cu_search'] = array(
+    'title' => 'Cornell Custom Search',
+    'page callback' => '_cu_customsearch_page',
+    'access arguments' => array('Cornell custom search'),
+    'type' => MENU_CALLBACK,
+  );
 	return $items;
 }
 
@@ -116,7 +116,7 @@ function _cu_customsearch_page($query_string = '') {
  */
 function _cu_customsearch_form_parameters() {
 	$params = array();
-	$legal_params = array( "qp", "sitesearch");
+	$legal_params = array("qp", "sitesearch");
 	if ($_SERVER['REQUEST_METHOD'] == "POST") {
 		foreach($legal_params as $param) {
 			$params["$param"] = isset($_POST["$param"]) ? $_POST["$param"] : "";
@@ -140,9 +140,9 @@ function cu_customsearch_block($op='list', $delta=0, $edit=array()) {
 	switch ($op) {
 		case 'list':
 			$blocks[0] = array(
-				'info' => t('Cornell Custom Search Form'),
-				'cache' => BLOCK_NO_CACHE,
-				);
+        'info' => t('Cornell Custom Search Form'),
+        'cache' => BLOCK_NO_CACHE,
+      );
 			return $blocks;
 		case 'view':
 			switch ($delta) {
