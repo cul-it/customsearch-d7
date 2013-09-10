@@ -1,0 +1,215 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Cornell University Custom Search
+ */
+ 
+/**
+ * replacement for module goosacul
+ * uses google custom search element instead of google search appliance
+ * goosacul was set up to expect these arguments:
+ *		qp - query parameter
+ *		sitesearch - where to search - values are:
+ *			thisone - search the current site
+ *			library - search the libraries collection within GSA
+ *			cornell - search all of cornell.edu
+ *		other google specific parameters - "q", "submit",
+ *		"output", "sort", "ie", "client", "oe", "site", "start", "num", "hl", 
+ *		"lr", "access", "sa"
+ * cu_sitesearch is set up to use these parameters
+ *		qp - query parameter
+ *		sitesearch - where to search
+ *			thisone - search the current site
+ *			custom - search the full cse domain list
+ *			cornell - jump to cornell.edu search preserving any query parameter
+ *		these arguments get recoded by cu_customsearch_init
+ * google_cse allows you to select multiple specific domains within the cse's
+ *		domain list so the sitesearch parameter is a domain name or 
+ *		null for 'search the whole domain list'
+ * be sure to add the current site to admin/settings/google_cse SiteSearch domain
+ *		so thisone will work!
+ */
+
+/**
+ * Implementation of hook_init().
+ *	handle recoding of cu_search & goosacul arguments into the google_cse query
+ *	when arguments are recoded google_cse shows search results without having to
+ *		hit the find button first
+ */
+function cu_customsearch_init() {
+	$cu_search = (arg(0) == 'cu_search');
+	$goosacul = (arg(0) == 'search' && arg(1) == 'cul_gsa');
+	if ($cu_search || $goosacul) {
+		$keys = $sitesearch = '';
+		if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['qp'])) {
+			$keys = $_GET['qp'];
+			$sitesearch = isset($_GET['sitesearch']) ? $_GET['sitesearch'] : '';
+			}
+		else if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['qp'])) {
+			$keys = $_POST['qp'];
+			$sitesearch = isset($_POST['sitesearch']) ? $_POST['sitesearch'] : '';
+			}
+		if (!empty($sitesearch)) {
+			// recode goosacul sitesearch parameter
+			switch ($sitesearch) {
+				case 'thisone':
+					$sitesearch = $_SERVER["SERVER_NAME"];
+					break;
+				case 'library':
+				case 'custom':
+					$sitesearch = NULL;
+					break;
+				case 'cornell':
+					// go directly to the cornell search page
+					if (empty($keys)) {
+						drupal_goto('http://cornell.edu/search');
+						}
+					else {
+						$arguments = array('q' => $keys);
+						drupal_goto('http://cornell.edu/search', $arguments);
+						}
+					break;
+				}
+			}
+		if (!empty($keys)) {
+			drupal_goto('cu_search', google_build_query($keys, $sitesearch));
+			}
+		}
+}
+
+
+/**
+ * Implementation of hook_perm
+ */
+function cu_customsearch_perm() {
+	return array('Cornell custom search');
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function cu_customsearch_menu() {
+	$items['cu_search'] = array (
+		'title' => 'Cornell Custom Search',
+		'page callback' => '_cu_customsearch_page',
+		'access arguments' => array('Cornell custom search'),
+		'type' => MENU_CALLBACK,
+		);
+	return $items;
+}
+
+/**
+ * this page shows the custom search and any current search results
+ * uses Google Custom Search to search 'this site'
+ */
+function _cu_customsearch_page($query_string = '') {
+	google_cse_results_set_title(); // get page title from google_cse admin
+	$block2 = module_invoke('google_cse', 'block', 'view', 1);
+	$output .= $block2['content'];
+	return $output;
+} 
+	
+/**
+ * code to return web form parameters
+ */
+function _cu_customsearch_form_parameters() {
+	$params = array();
+	$legal_params = array( "qp", "sitesearch");
+	if ($_SERVER['REQUEST_METHOD'] == "POST") {
+		foreach($legal_params as $param) {
+			$params["$param"] = isset($_POST["$param"]) ? $_POST["$param"] : "";
+			}
+		}
+	else if ($_SERVER['REQUEST_METHOD'] == "GET") {
+		// after someone hit's Next or Previous
+		foreach($legal_params as $param) {
+			$params["$param"] = isset($_GET["$param"]) ? $_GET["$param"] : "";
+			}
+		}
+		
+	return $params;
+	}
+
+
+/**
+ * Implementation of hook_block
+ */
+function cu_customsearch_block($op='list', $delta=0, $edit=array()) {
+	switch ($op) {
+		case 'list':
+			$blocks[0] = array(
+				'info' => t('Cornell Custom Search Form'),
+				'cache' => BLOCK_NO_CACHE,
+				);
+			return $blocks;
+		case 'view':
+			switch ($delta) {
+				case 0:
+					$params = _cu_customsearch_form_parameters();
+					$form = _cu_customsearch_block($params);
+		
+					
+					$blocks['subject'] = t('Cornell Search');
+					$blocks['content'] = $form;
+					break;
+				}
+			return $blocks;
+		}
+	}
+
+/**
+ * a block contianing the search form
+ */
+function _cu_customsearch_block($params) {
+	$query = isset($params['qp']) ? check_plain($params['qp']) : '';
+	$search = isset($params['sitesearch']) ? $params['sitesearch'] : 'thisone';
+	$radios = array('thisone' => 'This site', 'custom' => 'GSE', 'cornell' => 'Cornell');
+	if (!isset($radios["$search"])) $search = 'thisone';
+	$output[] = '<div id="search-form">';
+	///$output[] = '<form action="/cu_customsearch_action" method="POST">';
+	$output[] = '<form action="/cu_search" method="POST">';
+	$output[] = '<div id="search-input">';
+	$output[] = '<label for="search-form-query">SEARCH:</label>';
+	$output[] = '<input type="text" name="qp" value="' .$query . '" size="20"  maxlength="256" id="search-form-query" />';
+	$output[] = '<input type="submit" name="btnG" value="go" id="search-form-submit" />';
+	$output[] = '</div>';
+	$output[] = '<div id="search-filters">';
+	$count = 1;
+	foreach ($radios as $radio => $label) {
+		$id = "search-filters$count";
+		$checked = strcmp($search, $radio) == 0 ? 'checked="checked"' : '';
+		$output[] = "<input type=\"radio\" name=\"sitesearch\" value=\"$radio\" $checked id=\"$id\" />";
+		$output[] = "<label for=\"$id\">$label</label>";
+		$count++;
+		}
+	$output[] = '<a href="http://web.search.cornell.edu/"   >more options</a>';
+	$output[] = '</div>';
+	$output[] = '</form>';
+	$output[] = '</div>';
+	return implode(PHP_EOL, $output);
+}
+
+/**
+ * Implementation of hook_form_alter()
+ */
+function cu_customsearch_form_alter(&$form, $form_state, $form_id) {
+	if ($form_id == 'google_cse_results_searchbox_form') {
+		if (false && isset($form['query'])) {
+			if (empty($form['query']['#default_value'])) {
+				$query_parameter = 'qp';
+				if ($_SERVER['REQUEST_METHOD'] == "POST") {
+					$qp = isset($_POST["$query_parameter"]) ? $_POST["$query_parameter"] : '';
+					}
+				else if ($_SERVER['REQUEST_METHOD'] == "GET") {
+					$qp = isset($_GET["$query_parameter"]) ? $_GET["$query_parameter"] : '';
+					}
+				else {
+					$qp = '';
+					}
+				$form['query']['#default_value'] = $qp;
+				}
+			 }
+		}
+	}

@@ -1,0 +1,8 @@
+; $Id$
+name = Cornell Custom Search
+description = Allows users to search across Cornell or in a Google Custom Search Engine
+package = Cornell University Library
+core = 6.x
+dependencies[] = search
+dependencies[] = google
+dependencies[] = google_cse
