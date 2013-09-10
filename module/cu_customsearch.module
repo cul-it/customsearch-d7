@@ -5,7 +5,7 @@
  * @file
  * Cornell University Custom Search
  */
- 
+
 /**
  * replacement for module goosacul
  * uses google custom search element instead of google search appliance
@@ -16,7 +16,7 @@
  *			library - search the libraries collection within GSA
  *			cornell - search all of cornell.edu
  *		other google specific parameters - "q", "submit",
- *		"output", "sort", "ie", "client", "oe", "site", "start", "num", "hl", 
+ *		"output", "sort", "ie", "client", "oe", "site", "start", "num", "hl",
  *		"lr", "access", "sa"
  * cu_sitesearch is set up to use these parameters
  *		qp - query parameter
@@ -26,7 +26,7 @@
  *			cornell - jump to cornell.edu search preserving any query parameter
  *		these arguments get recoded by cu_customsearch_init
  * google_cse allows you to select multiple specific domains within the cse's
- *		domain list so the sitesearch parameter is a domain name or 
+ *		domain list so the sitesearch parameter is a domain name or
  *		null for 'search the whole domain list'
  * be sure to add the current site to admin/settings/google_cse SiteSearch domain
  *		so thisone will work!
@@ -109,8 +109,8 @@ function _cu_customsearch_page($query_string = '') {
 	$block2 = module_invoke('google_cse', 'block', 'view', 1);
 	$output .= $block2['content'];
 	return $output;
-} 
-	
+}
+
 /**
  * code to return web form parameters
  */
@@ -128,7 +128,7 @@ function _cu_customsearch_form_parameters() {
 			$params["$param"] = isset($_GET["$param"]) ? $_GET["$param"] : "";
 			}
 		}
-		
+
 	return $params;
 	}
 
@@ -149,8 +149,8 @@ function cu_customsearch_block($op='list', $delta=0, $edit=array()) {
 				case 0:
 					$params = _cu_customsearch_form_parameters();
 					$form = _cu_customsearch_block($params);
-		
-					
+
+
 					$blocks['subject'] = t('Cornell Search');
 					$blocks['content'] = $form;
 					break;
