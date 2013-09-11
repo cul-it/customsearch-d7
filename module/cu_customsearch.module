@@ -112,7 +112,9 @@ function cu_customsearch_menu() {
  * uses Google Custom Search to search 'this site'
  */
 function _cu_customsearch_page($query_string = '') {
-  google_cse_results_set_title(); // get page title from google_cse admin
+  if (function_exists('google_cse_results_set_title')) {
+    google_cse_results_set_title(); // get page title from google_cse admin
+  }
   $block2 = module_invoke('google_cse', 'block', 'view', 1);
   $output .= $block2['content'];
   return $output;
