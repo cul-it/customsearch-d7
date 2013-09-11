@@ -89,7 +89,7 @@ function cu_customsearch_permission() {
   return array(
     'Cornell custom search' => array(
       'title' => t('Cornell custom search'),
-      'description' => t('TODO Add a description for \'Cornell custom search\''),
+      'description' => t('Use Google custom search element to search Cornell web sites'),
     ),
   );
 }
@@ -145,7 +145,7 @@ function _cu_customsearch_form_parameters() {
  */
 function cu_customsearch_block_info() {
   // TODO Rename block deltas (e.g. delta-0) to readable strings.
-  $blocks['delta-0'] = array(
+  $blocks['cu-customsearch-block'] = array(
     'info' => t('Cornell Custom Search Form'),
     'cache' => BLOCK_NO_CACHE,
   );
@@ -158,7 +158,7 @@ function cu_customsearch_block_info() {
 function cu_customsearch_block_view($delta) {
   // TODO Rename block deltas (e.g. delta-0) to readable strings.
   switch ($delta) {
-    case 'delta-0':
+    case 'cu-customsearch-block':
       $params = _cu_customsearch_form_parameters();
       $form = _cu_customsearch_block($params);
 
