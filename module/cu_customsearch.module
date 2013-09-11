@@ -33,7 +33,7 @@
  */
 
 /**
- * Implementation of hook_init().
+ * Implements hook_init().
  *	handle recoding of cu_search & goosacul arguments into the google_cse query
  *	when arguments are recoded google_cse shows search results without having to
  *		hit the find button first
@@ -68,27 +68,34 @@ function cu_customsearch_init() {
           }
           else {
             $arguments = array('q' => $keys);
-            drupal_goto('http://cornell.edu/search', $arguments);
+            // TODO $arguments needs to be an array of keys and values instead of a string.
+            drupal_goto('http://cornell.edu/search', array('query' => $arguments));
           }
           break;
       }
     }
     if (!empty($keys)) {
-      drupal_goto('cu_search', google_build_query($keys, $sitesearch));
+      // TODO google_build_query($keys, $sitesearch) needs to be an array of keys and values instead of a string.
+      drupal_goto('cu_search', array('query' => google_build_query($keys, $sitesearch)));
     }
   }
 }
 
 
 /**
- * Implementation of hook_perm
+ * Implements hook_permission().
  */
-function cu_customsearch_perm() {
-  return array('Cornell custom search');
+function cu_customsearch_permission() {
+  return array(
+    'Cornell custom search' => array(
+      'title' => t('Cornell custom search'),
+      'description' => t('TODO Add a description for \'Cornell custom search\''),
+    ),
+  );
 }
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_menu().
  */
 function cu_customsearch_menu() {
   $items['cu_search'] = array(
@@ -134,29 +141,39 @@ function _cu_customsearch_form_parameters() {
 
 
 /**
- * Implementation of hook_block
+ * Implements hook_block_info().
  */
-function cu_customsearch_block($op = 'list', $delta = 0, $edit = array()) {
-  switch ($op) {
-    case 'list':
-      $blocks[0] = array(
-        'info' => t('Cornell Custom Search Form'),
-        'cache' => BLOCK_NO_CACHE,
-      );
-      return $blocks;
-    case 'view':
-      switch ($delta) {
-        case 0:
-          $params = _cu_customsearch_form_parameters();
-          $form = _cu_customsearch_block($params);
+function cu_customsearch_block_info() {
+  // TODO Rename block deltas (e.g. delta-0) to readable strings.
+  $blocks['delta-0'] = array(
+    'info' => t('Cornell Custom Search Form'),
+    'cache' => BLOCK_NO_CACHE,
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function cu_customsearch_block_view($delta) {
+  // TODO Rename block deltas (e.g. delta-0) to readable strings.
+  switch ($delta) {
+    case 'delta-0':
+      $params = _cu_customsearch_form_parameters();
+      $form = _cu_customsearch_block($params);
 
 
-          $blocks['subject'] = t('Cornell Search');
-          $blocks['content'] = $form;
-          break;
-      }
-      return $blocks;
+      $blocks['subject'] = t('Cornell Search');
+      $blocks['content'] = $form;
+      break;
   }
+  return $blocks;
+}
+
+/**
+ * Implements hook_block().
+ */
+function cu_customsearch_block_OLD($op = 'list', $delta = 0, $edit = array()) {
 }
 
 /**
@@ -198,7 +215,7 @@ function _cu_customsearch_block($params) {
 }
 
 /**
- * Implementation of hook_form_alter()
+ * Implements hook_form_alter().
  */
 function cu_customsearch_form_alter(&$form, $form_state, $form_id) {
   if ($form_id == 'google_cse_results_searchbox_form') {
