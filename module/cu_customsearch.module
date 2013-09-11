@@ -68,14 +68,12 @@ function cu_customsearch_init() {
           }
           else {
             $arguments = array('q' => $keys);
-            // TODO $arguments needs to be an array of keys and values instead of a string.
             drupal_goto('http://cornell.edu/search', array('query' => $arguments));
           }
           break;
       }
     }
     if (!empty($keys)) {
-      // TODO google_build_query($keys, $sitesearch) needs to be an array of keys and values instead of a string.
       drupal_goto('cu_search', array('query' => google_cse_build_query($keys, $sitesearch)));
     }
   }
@@ -146,7 +144,6 @@ function _cu_customsearch_form_parameters() {
  * Implements hook_block_info().
  */
 function cu_customsearch_block_info() {
-  // TODO Rename block deltas (e.g. delta-0) to readable strings.
   $blocks['cu-customsearch-block'] = array(
     'info' => t('Cornell Custom Search Form'),
     'cache' => BLOCK_NO_CACHE,
@@ -158,7 +155,6 @@ function cu_customsearch_block_info() {
  * Implements hook_block_view().
  */
 function cu_customsearch_block_view($delta) {
-  // TODO Rename block deltas (e.g. delta-0) to readable strings.
   switch ($delta) {
     case 'cu-customsearch-block':
       $params = _cu_customsearch_form_parameters();
