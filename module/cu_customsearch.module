@@ -146,7 +146,7 @@ function _cu_customsearch_form_parameters() {
 function cu_customsearch_block_info() {
   $blocks['cu-customsearch-block'] = array(
     'info' => t('Cornell Custom Search Form'),
-    'cache' => BLOCK_NO_CACHE,
+    'cache' => DRUPAL_NO_CACHE,
   );
   return $blocks;
 }
