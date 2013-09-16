@@ -112,6 +112,10 @@ function cu_customsearch_menu() {
  */
 function _cu_customsearch_page($query_string = '') {
   /**/
+  if (function_exists('google_cse_results'))  {
+    return google_cse_results();
+  }
+  /*
   if (function_exists('google_cse_results_set_title')) {
     google_cse_results_set_title(); // get page title from google_cse admin
   }
@@ -119,7 +123,7 @@ function _cu_customsearch_page($query_string = '') {
   dsm($block2);
   $output = $block2['content'];
   return $output;
-
+  */
   //return '';
 }
 
