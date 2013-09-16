@@ -75,7 +75,7 @@ function cu_customsearch_init() {
     }
     if (!empty($keys)) {
       //drupal_goto('cu_search', array('query' => google_cse_build_query($keys, $sitesearch)));
-      drupal_goto('search_test', array('query' => $keys));
+      drupal_goto('search_test', array('query' => google_cse_build_query($keys, $sitesearch)));
     }
   }
 }
