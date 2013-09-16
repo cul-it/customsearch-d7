@@ -114,6 +114,7 @@ function _cu_customsearch_page($query_string = '') {
     google_cse_results_set_title(); // get page title from google_cse admin
   }
   $block2 = module_invoke('google_cse', 'block', 'view', 1);
+  dsm($block2);
   $output = $block2['content'];
   return $output;
 }
