@@ -98,7 +98,7 @@ function cu_customsearch_permission() {
  */
 function cu_customsearch_menu() {
   $items['cu_search'] = array(
-    'title' => 'Cornell Custom Search',
+    'title' => 'Web Site Search Results',
     'page callback' => '_cu_customsearch_page',
     'access arguments' => array('Cornell custom search'),
     'type' => MENU_CALLBACK,
@@ -121,7 +121,7 @@ function _cu_customsearch_page($query_string = '') {
   $output = $block2['content'];
   return $output;
   */
-  return 'hello';
+  return '';
 }
 
 /**
