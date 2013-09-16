@@ -7,6 +7,12 @@
  */
 
 /**
+ * Drupal 7 version:
+ * this modules just creates an empty cs_search page. You have to arrange for the
+ * 'Google CSE' block to be visible on this page.
+ */
+
+/**
  * replacement for module goosacul
  * uses google custom search element instead of google search appliance
  * goosacul was set up to expect these arguments:
@@ -109,22 +115,12 @@ function cu_customsearch_menu() {
 /**
  * this page shows the custom search and any current search results
  * uses Google Custom Search to search 'this site'
+ * place the Google CSE block on this page to show results
  */
 function _cu_customsearch_page($query_string = '') {
-  /**/
-  if (function_exists('google_cse_results'))  {
-    return google_cse_results();
-  }
-  /*
-  if (function_exists('google_cse_results_set_title')) {
-    google_cse_results_set_title(); // get page title from google_cse admin
-  }
-  $block2 = module_invoke('google_cse', 'block', 'view', 1);
-  dsm($block2);
-  $output = $block2['content'];
-  return $output;
-  */
-  //return '';
+  // empty page
+  // place Google CSE block on cu_search page to show results
+  return '';
 }
 
 /**
